@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import 'rbx/index.css';
 import { Button, Container, Title, Message } from 'rbx';
-import firebase from 'firebase/app';
-import 'firebase/database';
-import 'firebase/auth';
+import firebase from './shared/firebase.js'
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
+import CourseList from './components/CourseList.js';
 
 const App = () => {
   const [schedule, setSchedule] = useState({ title: '', courses: [] });
@@ -30,16 +29,6 @@ const App = () => {
   );
 };
 
-const firebaseConfig = {
-  apiKey: "AIzaSyD7ZbUzhyIOwPyY6PcOqcJSVkZXSmAOBK8",
-  authDomain: "quick-react-c282d.firebaseapp.com",
-  databaseURL: "https://quick-react-c282d.firebaseio.com",
-  projectId: "quick-react-c282d",
-  storageBucket: "quick-react-c282d.appspot.com",
-  messagingSenderId: "32319431406",
-  appId: "1:32319431406:web:07e55bcf84b8f0903009ff"
-};
-
 const uiConfig = {
   signInFlow: 'popup',
   signInOptions: [
@@ -50,13 +39,7 @@ const uiConfig = {
   }
 };
 
-firebase.initializeApp(firebaseConfig);
 const db = firebase.database().ref();
-
-const addScheduleTimes = schedule => ({
-  title: schedule.title,
-  courses: Object.values(schedule.courses).map(addCourseTimes)
-});
 
 const Banner = ({ user, title }) => (
   <React.Fragment>
@@ -83,23 +66,48 @@ const Welcome = ({ user }) => (
   </Message>
 );
 
-const CourseList = ({ courses, user }) => {
-  const [term, setTerm] = useState('Fall');
-  const [selected, toggle] = useSelection();
-  const termCourses = courses.filter(course => term === getCourseTerm(course));
- 
-  return (
-    <React.Fragment>
-      <TermSelector state={ { term, setTerm } } />
-      <Button.Group>
-        { termCourses.map(course =>
-           <Course key={ course.id } course={ course }
-             state={ { selected, toggle } }
-             user={ user } />) }
-      </Button.Group>
-    </React.Fragment>
-  );
+const addScheduleTimes = schedule => ({
+  title: schedule.title,
+  courses: Object.values(schedule.courses).map(addCourseTimes)
+});
+
+const addCourseTimes = course => ({
+  ...course,
+  ...timeParts(course.meets)
+});
+
+const meetsPat = /^ *((?:M|Tu|W|Th|F)+) +(\d\d?):(\d\d) *[ -] *(\d\d?):(\d\d) *$/;
+
+const timeParts = meets => {
+  const [match, days, hh1, mm1, hh2, mm2] = meetsPat.exec(meets) || [];
+  return !match ? {} : {
+    days,
+    hours: {
+      start: hh1 * 60 + mm1 * 1,
+      end: hh2 * 60 + mm2 * 1
+    }
+  };
 };
+
+/*
+
+// const CourseList = ({ courses, user }) => {
+//   const [term, setTerm] = useState('Fall');
+//   const [selected, toggle] = useSelection();
+//   const termCourses = courses.filter(course => term === getCourseTerm(course));
+ 
+//   return (
+//     <React.Fragment>
+//       <TermSelector state={ { term, setTerm } } />
+//       <Button.Group>
+//         { termCourses.map(course =>
+//            <Course key={ course.id } course={ course }
+//              state={ { selected, toggle } }
+//              user={ user } />) }
+//       </Button.Group>
+//     </React.Fragment>
+//   );
+// };
 
 const terms = { F: 'Fall', W: 'Winter', S: 'Spring'};
 const days = ['M', 'Tu', 'W', 'Th', 'F'];
@@ -150,19 +158,6 @@ const saveCourse = (course, meets) => {
     .catch(error => alert(error));
 };
 
-const meetsPat = /^ *((?:M|Tu|W|Th|F)+) +(\d\d?):(\d\d) *[ -] *(\d\d?):(\d\d) *$/;
-
-const timeParts = meets => {
-  const [match, days, hh1, mm1, hh2, mm2] = meetsPat.exec(meets) || [];
-  return !match ? {} : {
-    days,
-    hours: {
-      start: hh1 * 60 + mm1 * 1,
-      end: hh2 * 60 + mm2 * 1
-    }
-  };
-};
-
 const daysOverlap = (days1, days2) => ( 
   days.some(day => days1.includes(day) && days2.includes(day))
 );
@@ -181,10 +176,7 @@ const courseConflict = (course1, course2) => (
   && timeConflict(course1, course2)
 );
 
-const addCourseTimes = course => ({
-  ...course,
-  ...timeParts(course.meets)
-});
+
 
 const hasConflict = (course, selected) => (
   selected.some(selection => courseConflict(course, selection))
@@ -201,5 +193,7 @@ const useSelection = () => {
 const buttonColor = selected => (
   selected ? 'success' : null
 );
+
+*/
 
 export default App;

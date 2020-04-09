@@ -3,16 +3,15 @@ import 'firebase/database';
 import 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: "API_KEY",
-  authDomain: "AUTHDOMAIN",
-  databaseURL: "DATABASE_URL",
-  projectId: "PROJECT_ID",
-  storageBucket: "STORAGE_BUCKET",
-  messagingSenderId: "MESSAGING_SENDER_ID",
-  appId: "APP_ID",
-  measurementId: "MEASUREMENT_ID"
+  apiKey: "AIzaSyD7ZbUzhyIOwPyY6PcOqcJSVkZXSmAOBK8",
+  authDomain: "quick-react-c282d.firebaseapp.com",
+  databaseURL: "https://quick-react-c282d.firebaseio.com",
+  projectId: "quick-react-c282d",
+  storageBucket: "quick-react-c282d.appspot.com",
+  messagingSenderId: "32319431406",
+  appId: "1:32319431406:web:07e55bcf84b8f0903009ff"
 };
   
-  firebase.initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig);
 
 export default firebase;
